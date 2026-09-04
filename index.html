@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>존중의 한마디 (베타) · 부천다움 2026</title>
+<meta name="description" content="별일 없는 하루, 내가 고르는 존중의 말 — 2026 감정노동존중주간 대사 선택 게임">
+<meta property="og:title" content="존중의 한마디 · 부천다움 2026">
+<meta property="og:description" content="아침 편의점부터 밤의 별점 창까지. 오늘 하루, 여섯 번의 순간에서 나의 한마디를 골라 보세요.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --blue:#2457C5; --blue-deep:#1B3F9B; --blue-soft:#E8F0FC;
+    --violet:#5B4BC9; --mint:#2FBFAE; --mint-deep:#1E8F83; --mint-soft:#DDF5F1;
+    --yellow:#FFC93C; --ivory:#FBF8F1; --ink:#1E2440; --ink-soft:#5A6180; --line:rgba(30,36,64,.12);
+  }
+  *{box-sizing:border-box} button{font-family:inherit}
+  html,body{margin:0;height:100%;background:var(--ivory);color:var(--ink);
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .app{max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,var(--bg1,#DCE9FF),var(--bg2,#FBF8F1));transition:background 1.2s ease}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;z-index:5;
+    background:rgba(255,255,255,.72);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .clock{font-size:15px;font-weight:900;letter-spacing:.02em}
+  .place-chip{font-size:12px;font-weight:800;color:var(--blue-deep);background:var(--blue-soft);padding:4px 11px;border-radius:100px}
+  .stars{display:flex;gap:3px;font-size:13px} .stars i{font-style:normal;filter:grayscale(1);opacity:.35;transition:.4s}
+  .stars i.lit{filter:none;opacity:1;transform:scale(1.2)}
+  .warmth{display:flex;align-items:center;gap:8px;padding:8px 16px 4px;font-size:11px;font-weight:800;color:var(--ink-soft)}
+  .warmth .track{flex:1;height:8px;border-radius:100px;background:rgba(30,36,64,.1);overflow:hidden}
+  .warmth .track i{display:block;height:100%;width:0;border-radius:100px;background:linear-gradient(90deg,#7FB5FF,var(--yellow),#FF9E6D);transition:width .8s cubic-bezier(.2,.8,.3,1)}
+  .chat{flex:1;overflow-y:auto;padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+  .sysline{align-self:center;font-size:11.5px;font-weight:700;color:var(--ink-soft);background:rgba(255,255,255,.7);padding:5px 14px;border-radius:100px;margin:4px 0;text-align:center;max-width:92%}
+  .msg{display:flex;gap:8px;max-width:86%;animation:pop .3s cubic-bezier(.2,1.2,.4,1)}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+  .msg .ava{flex:none;width:36px;height:36px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:19px}
+  .msg .col{display:flex;flex-direction:column;gap:3px}
+  .msg .who{font-size:10.5px;font-weight:800;color:var(--ink-soft);padding-left:4px}
+  .bub{background:#fff;border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:9px 13px;font-size:14.5px;line-height:1.5;
+    box-shadow:0 2px 6px rgba(30,36,64,.06);word-break:keep-all;white-space:pre-line}
+  .msg.me{align-self:flex-end;flex-direction:row-reverse}
+  .msg.me .bub{background:var(--blue);color:#fff;border:none;border-radius:16px 4px 16px 16px}
+  .msg.me .ava{display:none}
+  .msg.inner .bub{background:transparent;border:1.5px dashed rgba(30,36,64,.3);color:var(--ink-soft);box-shadow:none;font-style:italic}
+  .msg.me.inner .bub{background:transparent;border:1.5px dashed rgba(36,87,197,.5);color:var(--blue-deep)}
+  .typing .bub{display:flex;gap:4px;align-items:center;min-width:44px;min-height:20px}
+  .typing .dot{width:6px;height:6px;border-radius:50%;background:#B9C2DA;animation:blink 1s infinite}
+  .typing .dot:nth-child(2){animation-delay:.18s}.typing .dot:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  /* 뉴스 링크 카드 (관문용) */
+  .newscard{width:250px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 3px 8px rgba(30,36,64,.08)}
+  .newscard .nc-img{height:86px;background:linear-gradient(135deg,var(--blue-deep),var(--blue) 55%,var(--mint));position:relative;display:flex;align-items:flex-end;padding:10px}
+  .newscard .nc-img .nc-big{color:#fff;font-size:21px;font-weight:900;letter-spacing:-.03em;line-height:1.25;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .newscard .nc-badge{position:absolute;top:8px;left:8px;background:#fff;color:var(--blue-deep);font-size:9.5px;font-weight:900;padding:2px 8px;border-radius:100px}
+  .newscard .nc-body{padding:9px 11px}
+  .newscard .nc-title{font-size:12.5px;font-weight:800;line-height:1.4;word-break:keep-all}
+  .newscard .nc-src{font-size:10px;color:var(--ink-soft);margin-top:4px}
+  .choices{display:grid;gap:8px;padding:4px 2px 2px;animation:pop .35s ease}
+  .choices .label{font-size:11px;font-weight:900;color:var(--violet);text-align:center;margin-bottom:2px;line-height:1.5}
+  .choice{width:100%;text-align:left;background:#fff;border:1.5px solid #CBD6EE;border-radius:16px 4px 16px 16px;
+    padding:11px 14px;font-size:14.5px;font-weight:700;cursor:pointer;display:flex;gap:9px;align-items:flex-start;
+    box-shadow:0 3px 0 #DCE4F5;transition:transform .12s}
+  .choice:active{transform:translateY(2px)}
+  .choice .ico{flex:none;font-size:17px;margin-top:1px}
+  .choice[disabled]{opacity:.55;cursor:default}
+  .tray{display:flex;gap:8px;justify-content:center;padding:8px 16px 12px;z-index:4}
+  .slot{width:48px;height:40px;border-radius:11px;border:1.5px dashed rgba(30,36,64,.22);display:grid;place-items:center;
+    font-size:16px;font-weight:800;color:var(--ink-soft);background:rgba(255,255,255,.5);transition:.3s;filter:grayscale(1);opacity:.6}
+  .slot.filled{border-style:solid;border-color:var(--mint-deep);background:#fff;box-shadow:0 3px 0 #BFE7DF;animation:flip .5s ease;filter:none;opacity:1}
+  @keyframes flip{from{transform:rotateY(90deg) scale(.7)}to{transform:none}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 18px;border-radius:100px;
+    font-weight:800;font-size:15px;border:none;cursor:pointer}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:var(--yellow);color:var(--blue-deep);box-shadow:0 4px 0 #D9A400}
+  .btn-primary:active{box-shadow:0 1px 0 #D9A400;transform:translateY(3px)}
+  .btn-blue{background:var(--blue);color:#fff} .btn-ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+  .row{display:flex;gap:9px} .row .btn{flex:1;width:auto}
+  .overlay{position:absolute;inset:0;z-index:10;background:linear-gradient(165deg,var(--blue-deep),var(--blue) 52%,var(--mint));
+    color:#fff;padding:26px 22px;overflow:auto;display:flex;flex-direction:column}
+  .overlay.hidden{display:none}
+  .kicker{font-size:12px;font-weight:800;color:var(--yellow);margin-bottom:10px}
+  .beta-badge{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;color:#fff;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45);padding:2px 9px;border-radius:100px;
+    margin-right:7px;vertical-align:1px}
+  .overlay h1{font-size:29px;font-weight:900;letter-spacing:-.03em;line-height:1.25;margin:0 0 10px}
+  .overlay h1 em{font-style:normal;color:var(--yellow)}
+  .overlay p{margin:0;font-size:14.5px;color:rgba(255,255,255,.9);line-height:1.6}
+  .daystrip{display:flex;justify-content:space-between;gap:5px;margin:22px 0}
+  .daycell{flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:13px;padding:9px 2px;text-align:center}
+  .daycell .t{font-size:9.5px;font-weight:800;color:var(--yellow)} .daycell .e{font-size:20px;margin:3px 0} .daycell .p{font-size:9.5px;font-weight:700}
+  .meta{display:flex;gap:14px;justify-content:center;font-size:12px;color:rgba(255,255,255,.8);margin:14px 0 6px}
+  .privacy{font-size:11px;color:rgba(255,255,255,.72);text-align:center;margin-top:10px}
+  .result-wrap{position:absolute;inset:0;z-index:11;background:rgba(30,36,64,.5);display:none;align-items:flex-end}
+  .result-wrap.on{display:flex}
+  .result-inner{background:var(--ivory);width:100%;max-height:94dvh;overflow:auto;border-radius:24px 24px 0 0;padding:16px 16px 24px}
+  .rcard{border-radius:22px;color:#fff;padding:22px 18px 16px;background:linear-gradient(155deg,var(--blue-deep),var(--blue) 55%,var(--mint-deep));position:relative;overflow:hidden}
+  .rcard:before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.08);top:-70px;right:-60px}
+  .rcard .tag{font-size:11.5px;font-weight:800;color:var(--yellow)}
+  .rcard .style-emoji{font-size:50px;line-height:1;margin:10px 0 4px}
+  .rcard h2{margin:0;font-size:25px;font-weight:900;letter-spacing:-.03em}
+  .rcard .sub{font-size:13.5px;color:rgba(255,255,255,.85);margin:5px 0 12px}
+  .dist{display:grid;gap:5px;margin-bottom:13px}
+  .drow{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700}
+  .drow .dn{flex:none;width:62px;color:rgba(255,255,255,.85)}
+  .drow .db{flex:1;height:8px;border-radius:100px;background:rgba(255,255,255,.15);overflow:hidden}
+  .drow .db i{display:block;height:100%;border-radius:100px;background:var(--yellow)}
+  .drow .dc{flex:none;width:16px;text-align:right;color:rgba(255,255,255,.8)}
+  .lines{display:grid;gap:7px}
+  .lineitem{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:13px;padding:9px 12px;font-size:13px;line-height:1.45;display:flex;gap:8px;align-items:flex-start}
+  .lineitem .le{flex:none} .lineitem.pick{background:rgba(255,201,60,.2);border-color:var(--yellow)}
+  .lineitem .pk{margin-left:auto;flex:none;font-size:10.5px;font-weight:800;color:var(--yellow)}
+  .reveal{margin-top:14px;border-top:1px dashed rgba(255,255,255,.3);padding-top:12px}
+  .reveal .rv-t{font-size:12px;font-weight:900;color:var(--yellow);margin-bottom:7px}
+  .reveal .rv-i{font-size:12px;line-height:1.55;color:rgba(255,255,255,.9);margin-bottom:5px;display:flex;gap:7px}
+  .reveal .rv-i b{color:#fff}
+  .rfoot{display:flex;align-items:center;justify-content:space-between;margin-top:13px;font-size:10.5px;color:rgba(255,255,255,.65)}
+  .rfoot .rstars i{font-style:normal;filter:grayscale(1);opacity:.4} .rfoot .rstars i.lit{filter:none;opacity:1}
+  .actions{display:grid;gap:9px;margin-top:16px}
+  .toast{position:absolute;left:50%;top:64px;transform:translateX(-50%) translateY(-8px);opacity:0;background:var(--ink);color:#fff;
+    font-size:13px;padding:9px 15px;border-radius:100px;transition:.25s;pointer-events:none;z-index:30;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  @media(prefers-reduced-motion:reduce){.msg,.choices{animation:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <span class="clock" id="clock">07:50</span>
+    <span class="place-chip" id="place">등굣길</span>
+    <span class="stars" id="stars"><i>⭐</i><i>⭐</i></span>
+  </div>
+  <div class="warmth"><span>오늘의 온기</span><span class="track"><i id="warmfill"></i></span><span id="warmpct">18°</span></div>
+  <div class="chat" id="chat"></div>
+  <div class="tray" id="tray"></div>
+
+  <div class="overlay" id="intro">
+    <div class="kicker"><span class="beta-badge">BETA</span>대사 선택 게임 · 약 4분 · 정답 없음</div>
+    <h1>별일 없는 하루,<br>나의 <em>존중의 한마디</em></h1>
+    <p>특별한 날이 아니에요. 그냥 오늘 하루. 여섯 번의 순간에서 내가 고르는 대응이 쌓여, 나의 존중 대응 유형이 나와요. 크게 보답받는 일은 잘 없어요 — 현실이 그렇듯이. 그런데 마지막에, 그 작은 것들이 실제로 어떤 무게였는지 알게 될 거예요.</p>
+    <div class="daystrip">
+      <div class="daycell"><div class="t">07:55</div><div class="e">🏪</div><div class="p">편의점</div></div>
+      <div class="daycell"><div class="t">12:40</div><div class="e">🧩</div><div class="p">조별 단톡</div></div>
+      <div class="daycell"><div class="t">15:50</div><div class="e">🏫</div><div class="p">교실</div></div>
+      <div class="daycell"><div class="t">16:10</div><div class="e">📱</div><div class="p">복도</div></div>
+      <div class="daycell"><div class="t">19:20</div><div class="e">🚌</div><div class="p">버스</div></div>
+      <div class="daycell"><div class="t">20:30</div><div class="e">🛵</div><div class="p">배달앱</div></div>
+    </div>
+    <button class="btn btn-primary" id="btn-start">하루 시작하기 →</button>
+    <div class="meta"><span>💬 말풍선으로 대답</span><span>🧭 유형 4종</span><span>🔒 저장 안 함</span></div>
+    <p class="privacy">답변은 이 화면 안에서만 쓰이고 어디에도 보내지지 않아요.<br>지금은 베타버전이에요. 문안은 청소년 감수를 거쳐 확정됩니다.</p>
+  </div>
+
+  <div class="result-wrap" id="resultWrap"><div class="result-inner" id="resultInner"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* =====================================================================
+   DATA — 모든 문구는 현장 수집·청소년 감수 전의 가문안. 이 블록에서만 수정.
+   설계 원칙(2026.9. 개정):
+   · 반응은 무반응이 기본값. 보답은 게임 안에서 주지 않고 엔딩의 통계 리빌로만.
+   · 선택지는 실측 목록(잡코리아 알바생 설문: 한마디 54.6%, 실수 이해 54.3%,
+     맞인사 40.3%, 존댓말 37.6% / 힘든 손님 1위 반말 74.3%)에서만 가져온다.
+   · '그냥 지나침(관찰형)'도 벌 없이 담백하게 받는다.
+   · 유형 4종: heart 마음형 / mind 생각형 / move 행동형 / watch 관찰형 — 우열 없음.
+   · 교권 장면 근거: 교육부 2024 교육활동 침해 실태조사(수업방해 32.4%,
+     모욕·명예훼손 26.0%, 중학교 최다), 교원 설문 94.2% 침해 경험·목격.
+   ===================================================================== */
+const DATA = {
+  shareText: '나의 존중 대응 유형은 {name}! 너는 어떤 유형일지 골라 봐 👉 ',
+  types: {
+    support:{ emoji:'💗', name:'지지형', sub:'일단 네 편', line:'마음이 먼저 말을 거는 대응',
+      today:'오늘 너는 사람 쪽으로 먼저 움직였다. 편을 들고, 응원을 툭 던지고, 분위기를 데웠다.',
+      tip:'지지형의 한 수 — 마음 한 스푼이 상대를 혼자가 아니게 만든다.' },
+    logic:{ emoji:'🧠', name:'사고형', sub:'팩폭과 해결책', line:'상황을 정리하고 방안을 던지는 대응',
+      today:'오늘 너는 상황을 먼저 정리했다. 팩트로 짚고, 해볼 만한 방법을 내놨다. 팩폭도 애정이다.',
+      tip:'사고형의 한 수 — 감정 위에 팩트 하나를 얹으면 말이 단단해진다.' },
+    action:{ emoji:'🏃', name:'행동형', sub:'말보다 먼저', line:'몸이 먼저 움직이는 대응',
+      today:'오늘 너는 말 대신 움직였다. 문을 잡고, 폰을 내리고, 목록에 이름을 적었다.',
+      tip:'행동형의 한 수 — 오글거리는 말 대신, 몸이 하는 말도 있다.' },
+    watch:{ emoji:'🌙', name:'관찰형', sub:'조용한 스캐너', line:'지켜보다 마음속으로 정리하는 대응',
+      today:'오늘 너는 한 발 뒤에서 지켜봤다. 나서지 않았지만, 놓치지도 않았다.',
+      tip:'관찰형의 한 수 — 지켜보는 것도 대응이다. 타이밍은 관찰에서 나온다.' },
+  },
+  /* 관문: 뉴스 카드가 뜨고, 친구의 주장에 답한다. 틀리면 같은 답을 유도하는
+     힌트 대신 "변형 문항"이 새로 출제된다(감점 없음). */
+  gates: [
+    { id:'g1', clock:'07:50', place:'등굣길 · 단톡방', bg:['#CFE3FF','#F4F0FF'],
+      friend:{emoji:'😎', name:'단톡방 · 지우'},
+      news:{ big:'10명 중 4명', badge:'뉴스', title:'"일하는 사람 10명 중 4명은 감정노동자" — 편의점·식당·버스까지', src:'감정노동 실태 보도 · 2025' },
+      pre:'야 이 기사 봤냐?',
+      claim:'나 이거 대충 봤는데, 결국 승무원이나 콜센터 상담원 같은 특별한 직업 얘기 아님?',
+      truth:false, yes:'그런 것 같은데?', no:'아니야, 기사 다시 봐봐',
+      wrong:'엥 그런가? 근데 제목이 10명 중 4명인데… 그게 다 승무원일 리는 없잖아 ㅋㅋ',
+      retry:{ claim:'그럼 뭐야, 편의점 알바도 감정노동자라는 거야?', yes:'ㅇㅇ 맞지', no:'아니지 않나', truth:true },
+      right:'헐 그러네. 그럼 우리가 맨날 보는 사람들이 다 감정노동자네 ⭐',
+      explain:'감정노동은 특별한 직업만의 일이 아니에요. 알바생도 감정노동자예요.' },
+    { id:'g2', clock:'12:35', place:'점심 · 단톡방', bg:['#FFF3D6','#FBF8F1'],
+      friend:{emoji:'🐥', name:'단톡방 · 하람'},
+      news:{ big:'94.2%', badge:'뉴스', title:'"교사 94.2%, 최근 3년간 교육활동 침해 겪거나 목격" — 설문 결과', src:'교원 대상 설문 보도 · 2025' },
+      pre:'이건 또 뭐냐 ㄷㄷ',
+      claim:'근데 쌤들이 뭘 감정노동을 함? 그냥 수업만 하면 되는 거 아냐?',
+      truth:false, yes:'그런 듯 ㅋㅋ', no:'아니지, 쌤도 감정노동자지',
+      wrong:'음… 근데 기사에는 열에 아홉이 힘든 일 겪었다는데? 그건 뭐냐',
+      retry:{ claim:'그럼 쌤들도 감정 누르고 일하는 날이 있다는 거네?', yes:'ㅇㅇ 그렇지', no:'에이 아니지', truth:true },
+      right:'하긴… 우리 반만 하루종일 상대해도 나 같으면 지칠 듯. 인정 ⭐',
+      explain:'가르치고 돌보는 일도 감정노동이에요. 선생님도 지칠 수 있는 사람이에요.' },
+  ],
+  /* 여섯 장면 · 선택 지점 8개. 매 지점에 네 유형이 하나씩(4지선다). 반응은 무덤덤이 기본값. */
+  scenes: [
+    { id:'store', clock:'07:55', place:'편의점', emoji:'🏪', bg:['#CFE3FF','#EAF4F1'],
+      npc:{emoji:'🧢', name:'편의점 알바생'},
+      open:[
+        {who:'nar', text:'등교 전 편의점. 내 앞의 손님이 카드를 툭 던지며 말한다.'},
+        {who:'frd', text:'"빨리 좀 해. 늦었으니까." (반말이다)'},
+        {who:'npc', text:'…죄송합니다.'},
+        {who:'nar', text:'손님이 나가고, 내 차례. 별일은 아니다. 늘 있는 아침이다.'},
+      ],
+      beats:[
+        { prompt:'내 차례. 나는 —', choices:[
+          { tag:'support', ico:'💗', line:'일부러 더 밝게 — "안녕하세요~ 삼각김밥 하나요!"',
+            me:'안녕하세요~ 삼각김밥 하나요!',
+            reply:[{who:'npc', text:'…네, 1,200원입니다. (목소리가 아주 조금 풀린 것 같기도 하다)'}] },
+          { tag:'logic', ico:'🧠', line:'(속으로: 방금 건 선 넘었지) 평소대로 또박또박 존댓말로 주문한다.',
+            me:'(속으로: 방금 건 선 넘었지) 삼각김밥 하나 주세요.',
+            reply:[{who:'nar', text:'평소와 같은 계산. 그게 전부였다.'}] },
+          { tag:'action', ico:'🏃', line:'(말없이 카드를 두 손으로 건네고, 나갈 때 목례만 까딱)',
+            reply:[{who:'nar', text:'반응은 없었다. 뭐, 그래도 했다.'}] },
+          { tag:'watch', ico:'🌙', line:'(조용히 계산만. 마음속으로만 \'수고하세요\')',
+            me:'(마음속으로: 수고하세요) …',
+            reply:[{who:'nar', text:'오늘은 마음속으로만. 그런 날도 있다.'}] },
+        ]},
+      ],
+      close:[] },
+    { id:'team', clock:'12:40', place:'조별 단톡방', emoji:'🧩', bg:['#FFF6DE','#EAF4F1'],
+      npc:{emoji:'😮‍💨', name:'조원 서진'},
+      open:[
+        {who:'nar', text:'점심시간. 수행평가 발표는 내일. 조별 단톡방이 울린다.'},
+        {who:'npc', text:'얘들아 시온이 이틀째 답 없어… 나 혼자 PPT 하고 있는데 못 끝낼 듯 ㅠㅠ'},
+      ],
+      beats:[
+        { prompt:'단톡방에 나는 — (시온이도 이 방을 보고 있다)', choices:[
+          { tag:'support', ico:'💗', line:'"서진아 고생했다 진짜ㅠ 혼자 하지 마"',
+            reply:[{who:'npc', text:'ㅠㅠ 고마워'},{who:'sio', text:'…미안. 사실 뭘 해야 할지 몰라서 계속 못 열어봤어.'}] },
+          { tag:'logic', ico:'🧠', line:'"정리하자. 발표 내일이고 시온이 답이 필요함. 시온아 보면 답 좀"',
+            reply:[{who:'sio', text:'…미안. 사실 뭘 해야 할지 몰라서 못 열어봤어.'}] },
+          { tag:'action', ico:'🏃', line:'(말 대신, 남은 목록 절반에 내 이름을 적어 올린다)',
+            me:'(남은 목록 절반에 내 이름을 적어 올렸다)',
+            reply:[{who:'npc', text:'헐 고마워ㅠ'},{who:'sio', text:'…미안 얘들아. 나 뭘 해야 할지 모르겠어서.'}] },
+          { tag:'watch', ico:'🌙', line:'(일단 톡을 지켜본다)',
+            me:'(읽고, 잠시 지켜봤다)',
+            reply:[{who:'sio', text:'…미안. 사실 뭘 해야 할지 몰라서 못 열어봤어.'}] },
+        ]},
+        { prompt:'잠수 탔던 시온이가 "뭘 해야 할지 모르겠다"고 한다. 나는 —', choices:[
+          { tag:'logic', ico:'🧠', line:'"그럼 역할 정리. 대본 읽기가 제일 확실함. 그거 맡아줘"',
+            reply:[{who:'sio', text:'ㅇㅋ 그건 할 수 있을 듯'}] },
+          { tag:'support', ico:'💗', line:'"몰랐으면 말하지~ 같이 보면 됨"',
+            reply:[{who:'sio', text:'…고마워. 다음엔 바로 말할게'}] },
+          { tag:'action', ico:'🏃', line:'(할 일을 셋으로 나눈 목록을 올린다)',
+            me:'(할 일 목록을 셋으로 나눠 올렸다)',
+            reply:[{who:'sio', text:'아 이러니까 보이네. 2번 할게'},{who:'npc', text:'ㅇㅋㅇㅋ'}] },
+          { tag:'watch', ico:'🌙', line:'(정해지는 걸 보고, 내 몫만 확인한다)',
+            me:'(역할이 정해지는 걸 보고 내 몫을 확인했다)',
+            reply:[{who:'npc', text:'그럼 시온이 대본, 나 PPT, 나머지 나눌게!'},{who:'nar', text:'내 몫이 정해졌다.'}] },
+        ]},
+      ],
+      close:[{who:'nar', text:'단톡방이 다시 굴러가기 시작했다.'}] },
+    { id:'class', clock:'15:50', place:'교실', emoji:'🏫', bg:['#FFE9C9','#F6EFE4'],
+      npc:{emoji:'🧑‍🏫', name:'담임 선생님'},
+      open:[
+        {who:'nar', text:'종례 끝. 별일 없는 하루였다. 다들 우르르 나가고, 선생님은 프린트 뭉치를 안고 뒷문 쪽으로 온다.'},
+      ],
+      beats:[
+        { prompt:'문 앞에서 마주쳤다. 나는 —', choices:[
+          { tag:'support', ico:'💗', line:'"쌤 저희 가요~" (지나가면서 툭)',
+            reply:[{who:'npc', text:'어, 그래. 내일 보자.'}] },
+          { tag:'logic', ico:'🧠', line:'"쌤 그거 저희 반 유인물이면 지금 나눠 놓을까요?"',
+            reply:[{who:'npc', text:'아, 이건 옆 반 거야. 마음만 받을게. (웃음)'}] },
+          { tag:'action', ico:'🏃', line:'(문을 잡고, 선생님 먼저 지나가시게 한다)',
+            reply:[{who:'npc', text:'어, 고마워.'},{who:'nar', text:'그게 다였다.'}] },
+          { tag:'watch', ico:'🌙', line:'(그냥 나간다. 오늘은 별로 말 걸 기분이 아니다)',
+            me:'(그냥 나왔다)',
+            reply:[{who:'nar', text:'복도로 나왔다. 별일 없는 하루가 지나간다.'}] },
+        ]},
+      ],
+      close:[] },
+    { id:'hall', clock:'16:10', place:'복도', emoji:'📱', bg:['#EDEBFA','#E4F3EC'],
+      npc:{emoji:'🐥', name:'하람'},
+      open:[
+        {who:'nar', text:'복도에서 하람이가 폰을 들이민다. 아까 5교시에 언성이 높아졌던 선생님 영상이다.'},
+        {who:'npc', text:'아까 쌤 이거 ㅋㅋㅋ 반 단톡에 올릴까?'},
+      ],
+      beats:[
+        { prompt:'나는 —', choices:[
+          { tag:'logic', ico:'🧠', line:'"올리면 일 커짐. 그거 초상권이야"',
+            reply:[{who:'npc', text:'에이 왜~ 웃기잖아. 다른 애들도 올리던데?'}] },
+          { tag:'support', ico:'💗', line:'"쌤도 오늘 힘들었을 텐데 그건 좀…"',
+            reply:[{who:'npc', text:'뭐가~ 웃긴 건 웃긴 거지'}] },
+          { tag:'action', ico:'🏃', line:'(폰을 슬쩍 아래로 내린다)',
+            me:'(하람이 폰을 슬쩍 내렸다)',
+            reply:[{who:'npc', text:'뭐야 ㅋㅋ 왜 진지함'}] },
+          { tag:'watch', ico:'🌙', line:'(대답 대신 어깨만 으쓱)',
+            me:'(어깨만 으쓱했다)',
+            reply:[{who:'npc', text:'…뭐야 그 반응 ㅋㅋ 아 왜~'}] },
+        ]},
+        { prompt:'하람이가 "웃기잖아"라며 버틴다. 나는 —', choices:[
+          { tag:'logic', ico:'🧠', line:'"네 영상 돌면? 똑같은 거임"',
+            reply:[{who:'npc', text:'…아 그건 싫지. 알았어 안 올림'}] },
+          { tag:'support', ico:'💗', line:'"그거 올라가면 나까지 기분 별로일 듯"',
+            reply:[{who:'npc', text:'…흠. 그럼 말고. (폰을 넣는다)'}] },
+          { tag:'action', ico:'🏃', line:'"됐고 매점 가자, 내가 쏨" (화제를 돌린다)',
+            reply:[{who:'npc', text:'ㅇㅋ 콜'},{who:'nar', text:'올린다는 얘기는 더 없었다.'}] },
+          { tag:'watch', ico:'🌙', line:'(말 없이 3초, 쳐다보기만 한다)',
+            me:'(3초간 말없이 쳐다봤다)',
+            reply:[{who:'npc', text:'…아 알았어 알았어, 지운다 지워'}] },
+        ]},
+      ],
+      close:[] },
+    { id:'bus', clock:'19:20', place:'버스', emoji:'🚌', bg:['#C9CFF2','#8FA0E0'],
+      npc:{emoji:'🧑‍✈️', name:'버스 기사님'},
+      open:[
+        {who:'nar', text:'학원 끝. 저녁 버스는 조용하다. 내릴 정류장이 가까워진다.'},
+        {who:'nar', text:'(솔직히, 기사님한테 인사하는 건 좀 오글거린다.)'},
+      ],
+      beats:[
+        { prompt:'뒷문 앞에서, 나는 —', choices:[
+          { tag:'support', ico:'💗', line:'"감사합니다~" (오글거리지만 그냥 툭)',
+            reply:[{who:'nar', text:'기사님은 못 들은 것 같다. 뭐, 그래도 했다.'}] },
+          { tag:'logic', ico:'🧠', line:'(내릴 때 버벅대지 않게, 미리 벨 누르고 카드를 꺼내 둔다)',
+            me:'(미리 벨을 누르고 카드를 꺼내 뒷문 앞에 섰다)',
+            reply:[{who:'nar', text:'문이 열리자마자 바로 내렸다. 뒤가 막히지 않았다.'}] },
+          { tag:'action', ico:'🏃', line:'(기사님 쪽을 향해 고개만 까딱하고 내린다)',
+            reply:[{who:'npc', text:'(백미러로 잠깐 눈이 마주친 것 같기도 하다)'}] },
+          { tag:'watch', ico:'🌙', line:'(마음속으로만 \'수고하세요\' 하고 내린다)',
+            me:'(마음속으로: 수고하세요) …',
+            reply:[{who:'nar', text:'조용히 내렸다. 저녁 바람이 분다.'}] },
+        ]},
+      ],
+      close:[] },
+    { id:'app', clock:'20:30', place:'집 · 배달앱', emoji:'🛵', bg:['#8FA0E0','#3A4160'],
+      npc:{emoji:'🍳', name:'분식집'},
+      open:[
+        {who:'nar', text:'시킨 떡볶이가 40분 늦게 왔다. 조금 식었다. 앱에서 알림이 뜬다.'},
+        {who:'sys', text:'⭐ 별점과 리뷰를 남겨주세요!'},
+      ],
+      beats:[
+        { prompt:'별점 창 앞에서, 나는 —', choices:[
+          { tag:'logic', ico:'🧠', line:'팩트대로 정중하게 — "40분 늦게 왔어요. 맛은 좋았음. 다음엔 부탁드려요"',
+            me:'(리뷰를 썼다) 40분 늦게 왔어요. 맛은 좋았음. 다음엔 부탁드려요',
+            reply:[{who:'nar', text:'답글은 달리지 않았다. 달리지 않아도, 전해졌을 것이다.'}] },
+          { tag:'support', ico:'💗', line:'좋았던 것만 — "잘 먹었습니다~ 바쁜 날이었나 봐요"',
+            me:'(리뷰를 썼다) 잘 먹었습니다~ 바쁜 날이었나 봐요',
+            reply:[{who:'nar', text:'다음 날 아침에야 답글이 달렸다. "감사합니다. 어제 정신이 없었어요…"'}] },
+          { tag:'action', ico:'🏃', line:'(말없이 별점만 남기고 창을 닫는다)',
+            me:'(별점만 남기고 닫았다)',
+            reply:[{who:'nar', text:'리뷰는 없었지만, 별점 옆 숫자가 아주 조금 움직였다.'}] },
+          { tag:'watch', ico:'🌙', line:'오늘은 패스. 별점도 리뷰도 나중에.',
+            me:'(폰을 내려놨다)',
+            reply:[{who:'nar', text:'적어도, 화풀이 별점은 아니었다.'}] },
+        ]},
+      ],
+      close:[{who:'nar', text:'하루가 끝났다. 딱히 극적인 일은 없었다.'}] },
+  ],
+  ending:{
+    tiePrompt:'오늘 나의 대응이 두 유형으로 똑같이 모였어요. 더 나답다고 느끼는 쪽은?',
+  },
+  /* 엔딩 리빌: 게임 중 무반응이던 것들의 실제 무게. */
+  reveal:[
+    { ico:'💬', text:'"수고하세요" 같은 한마디 — 알바생이 꼽은 감동 손님 <b>1위(54.6%)</b>가 바로 그거였다.' },
+    { ico:'👋', text:'맞인사·목례 — 감동 <b>3위(40.3%)</b>. 반응이 없어 보여도, 저쪽 기억엔 남는다.' },
+    { ico:'🚫', text:'반말 — 알바생을 힘들게 하는 손님 <b>1위(74.3%)</b>. 오늘 네가 하지 않은 것.' },
+    { ico:'🎬', text:'교사 <b>94.2%</b>가 수업 방해·조롱을 겪거나 봤다. 오늘 안 올라간 영상 하나는 작지 않다.' },
+  ],
+  revealSrc:'출처: 알바생 대상 설문(잡코리아) · 교원 대상 설문 보도 — 상세 출처는 운영 문서에',
+};
+
+/* ===================== 엔진 ===================== */
+const $=id=>document.getElementById(id);
+const FAST=/(\?|&)fast=1/.test(location.search);
+const D=ms=>new Promise(r=>setTimeout(r,FAST?15:ms));
+const S={stars:{}, done:[], tags:[], warmth:0, type:null};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function setSceneMeta(clock,place,bg){$('clock').textContent=clock;$('place').textContent=place;
+  $('app').style.setProperty('--bg1',bg[0]);$('app').style.setProperty('--bg2',bg[1]);}
+function warm(n){S.warmth=Math.min(100,S.warmth+n);$('warmfill').style.width=S.warmth+'%';$('warmpct').textContent=Math.round(18+S.warmth*0.185)+'°';}
+function scrollBottom(){const c=$('chat');c.scrollTop=c.scrollHeight;}
+function avatarFor(who,scene){ if(who==='npc')return (scene&&scene.npc)||{emoji:'💬',name:'상대'}; if(who==='frd')return {emoji:'😐',name:'앞 손님'}; if(who==='sio')return {emoji:'🫥',name:'조원 시온'}; if(who==='sys')return {emoji:'🔔',name:'알림'}; return {emoji:'🙂',name:'나'}; }
+async function say(scene,step){
+  const c=$('chat');
+  if(step.who==='nar'){ const d=document.createElement('div'); d.className='sysline'; d.textContent=step.text; c.appendChild(d); scrollBottom(); await D(950); return; }
+  const me=step.who==='me'; const a=avatarFor(step.who,scene);
+  const inner=/^\(마음속|^\(속으로/.test(step.text);
+  if(!me){ const t=document.createElement('div'); t.className='msg typing'; t.innerHTML=`<div class="ava">${a.emoji}</div><div class="col"><div class="bub"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`; c.appendChild(t); scrollBottom(); await D(700); t.remove(); }
+  const m=document.createElement('div'); m.className='msg'+(me?' me':'')+(inner?' inner':'');
+  m.innerHTML=`<div class="ava">${a.emoji}</div><div class="col">${me?'':`<span class="who">${esc(a.name)}</span>`}<div class="bub">${esc(step.text)}</div></div>`;
+  c.appendChild(m); scrollBottom(); await D(1000);
+}
+function newsBubble(g){ const c=$('chat'); const w=document.createElement('div'); w.className='msg';
+  w.innerHTML=`<div class="ava">${g.friend.emoji}</div><div class="col"><span class="who">${esc(g.friend.name)}</span>
+    <div class="newscard"><div class="nc-img"><span class="nc-badge">${esc(g.news.badge)}</span><span class="nc-big">${esc(g.news.big)}</span></div>
+    <div class="nc-body"><div class="nc-title">${esc(g.news.title)}</div><div class="nc-src">${esc(g.news.src)}</div></div></div></div>`;
+  c.appendChild(w); scrollBottom(); }
+function askChoices(label,items){ return new Promise(res=>{
+  const c=$('chat'); const w=document.createElement('div'); w.className='choices';
+  w.innerHTML=`<div class="label">${esc(label)}</div>`;
+  items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=`<span class="ico">${it.ico||'💬'}</span><span>${esc(it.line)}</span>`;
+    b.onclick=()=>{ [...w.querySelectorAll('.choice')].forEach(x=>x.disabled=true); w.remove(); res(i); };
+    w.appendChild(b); });
+  c.appendChild(w); scrollBottom();
+});}
+function renderTray(){ $('tray').innerHTML=DATA.scenes.map((sc,i)=>`<div class="slot ${S.done[i]?'filled':''}">${sc.emoji}</div>`).join(''); }
+function refreshStars(){ const el=$('stars').children; el[0].classList.toggle('lit',!!S.stars.g1); el[1].classList.toggle('lit',!!S.stars.g2); }
+
+async function runGate(g){
+  setSceneMeta(g.clock,g.place,g.bg); $('chat').innerHTML='';
+  await say({npc:g.friend},{who:'npc',text:g.pre});
+  newsBubble(g); await D(1100);
+  await say({npc:g.friend},{who:'npc',text:g.claim});
+  let q={claim:g.claim,yes:g.yes,no:g.no,truth:g.truth}, first=true;
+  while(true){
+    const i=await askChoices('뭐라고 답할까?',[{ico:'🙆',line:q.yes},{ico:'🙅',line:q.no}]);
+    await say({npc:g.friend},{who:'me',text:i===0?q.yes:q.no});
+    if((i===0)===q.truth){ S.stars[g.id]=true; refreshStars(); await say({npc:g.friend},{who:'npc',text:g.right}); warm(6); toast('⭐ 지식의 별이 켜졌어요'); break; }
+    if(first){ first=false; await say({npc:g.friend},{who:'npc',text:g.wrong}); q=g.retry; await say({npc:g.friend},{who:'npc',text:q.claim}); }
+    else { await say({npc:g.friend},{who:'npc',text:g.explain}); await say({npc:g.friend},{who:'npc',text:q.claim}); }
+    toast('감점 없어요 — 다시 답해 봐요');
+  }
+  await D(400);
+}
+async function runScene(sc,idx){
+  setSceneMeta(sc.clock,sc.place+' · '+sc.emoji,sc.bg); $('chat').innerHTML='';
+  for(const st of sc.open) await say(sc,st);
+  for(const beat of sc.beats){
+    const i=await askChoices(beat.prompt,beat.choices);
+    const ch=beat.choices[i];
+    const meText=(ch.me||ch.line).replace(/^"|"$/g,'');
+    const isAct=meText.startsWith('(') && !meText.includes('"');
+    await say(sc,{who:'me',text:isAct?meText.replace(/^\(|\)$/g,''):meText});
+    for(const st of ch.reply) await say(sc,st);
+    S.tags.push(ch.tag);
+  }
+  S.done[idx]=true; renderTray(); warm(13);
+  for(const st of sc.close) await say(sc,st);
+  await D(350);
+}
+async function main(){
+  $('intro').classList.add('hidden'); renderTray();
+  await runGate(DATA.gates[0]);
+  await runScene(DATA.scenes[0],0);
+  await runGate(DATA.gates[1]);
+  await runScene(DATA.scenes[1],1);
+  await runScene(DATA.scenes[2],2);
+  await runScene(DATA.scenes[3],3);
+  await runScene(DATA.scenes[4],4);
+  await runScene(DATA.scenes[5],5);
+  await ending();
+}
+async function ending(){
+  setSceneMeta('21:30','집 · 오늘의 정리',['#5A6180','#1E2440']); $('chat').innerHTML='';
+  await say(null,{who:'nar',text:'자기 전. 오늘 한 것들을 떠올려 봤다. 아무도 크게 반응하지 않았다.'});
+  await say(null,{who:'nar',text:'그런데 정말 아무 일도 아니었을까?'});
+  const cnt={}; S.tags.forEach(t=>cnt[t]=(cnt[t]||0)+1);
+  const max=Math.max(...Object.values(cnt)); const tied=Object.keys(cnt).filter(k=>cnt[k]===max);
+  if(tied.length===1) S.type=tied[0];
+  else { const i=await askChoices(DATA.ending.tiePrompt, tied.map(t=>({ico:DATA.types[t].emoji, line:DATA.types[t].name+' · '+DATA.types[t].sub}))); S.type=tied[i]; }
+  warm(10); showResult();
+}
+function distHtml(){ const cnt={support:0,logic:0,action:0,watch:0}; S.tags.forEach(t=>cnt[t]++);
+  const tot=S.tags.length||1;
+  return `<div class="dist">`+Object.keys(DATA.types).map(k=>`<div class="drow"><span class="dn">${DATA.types[k].emoji} ${DATA.types[k].name}</span><span class="db"><i style="width:${Math.round(cnt[k]/tot*100)}%"></i></span><span class="dc">${cnt[k]}</span></div>`).join('')+`</div>`; }
+function showResult(){
+  const tp=DATA.types[S.type]; const starN=(S.stars.g1?1:0)+(S.stars.g2?1:0);
+  const others=Object.keys(DATA.types).filter(k=>k!==S.type);
+  $('resultInner').innerHTML=`
+    <div class="rcard" id="fcard">
+      <div class="tag">2026 감정노동존중주간 · 나의 존중 대응 유형</div>
+      <div class="style-emoji">${tp.emoji}</div><h2>${esc(tp.name)} <span style="font-size:14px;font-weight:700;color:rgba(255,255,255,.8)">· ${esc(tp.sub)}</span></h2>
+      <div class="sub">${esc(tp.line)}</div>
+      <div class="lineitem" style="margin-bottom:12px">${esc(tp.today)}</div>
+      ${distHtml()}
+      <div class="reveal" style="margin-top:0;border-top:0;padding-top:0"><div class="rv-t">다른 유형의 한 수</div>
+        ${others.map(k=>`<div class="rv-i"><span>${DATA.types[k].emoji}</span><span>${esc(DATA.types[k].tip)}</span></div>`).join('')}</div>
+      <div class="reveal"><div class="rv-t">아무 일도 아니었을까? — 진짜 기록</div>
+        ${DATA.reveal.map(r=>`<div class="rv-i"><span>${r.ico}</span><span>${r.text}</span></div>`).join('')}
+        <div class="rv-i" style="opacity:.6;font-size:10.5px">${esc(DATA.revealSrc)}</div></div>
+      <div class="rfoot"><span>부천시일쉼지원센터 · 존중의 한마디 (베타)</span><span class="rstars"><i class="${S.stars.g1?'lit':''}">⭐</i><i class="${S.stars.g2?'lit':''}">⭐</i> ${starN}/2</span></div>
+    </div>
+    <div class="actions">
+      <div class="row"><button class="btn btn-blue" id="btn-share">공유하기</button><button class="btn btn-ghost" id="btn-copy">링크 복사</button></div>
+      <button class="btn btn-primary" id="btn-save">유형 카드 저장</button>
+      <button class="btn btn-ghost" id="btn-restart">하루 다시 살기</button>
+    </div>`;
+  $('resultWrap').classList.add('on');
+  $('btn-share').onclick=async()=>{ const url=location.href.split('?')[0].split('#')[0];
+    const text=DATA.shareText.replace('{name}',tp.name+'('+tp.sub+')');
+    if(navigator.share){ try{ await navigator.share({title:'존중의 한마디',text,url}); }catch(e){} }
+    else { try{ await navigator.clipboard.writeText(text+url); toast('공유 문구를 복사했어요'); }catch(e){ toast('복사가 안 돼요'); } } };
+  $('btn-copy').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href.split('?')[0].split('#')[0]); toast('링크를 복사했어요'); }catch(e){ toast('복사가 안 돼요'); } };
+  $('btn-save').onclick=async()=>{ if(!window.html2canvas){ toast('이미지 저장을 불러오지 못했어요'); return; }
+    try{ const c=await html2canvas($('fcard'),{scale:2,backgroundColor:null,useCORS:true});
+      const a=document.createElement('a'); a.download='존중_대응유형_'+tp.name+'.png'; a.href=c.toDataURL('image/png'); a.click(); toast('카드를 저장했어요'); }
+    catch(e){ toast('이미지 저장에 실패했어요'); } };
+  $('btn-restart').onclick=()=>location.reload();
+}
+$('btn-start').onclick=main;
+renderTray();
+</script>
+</body>
+</html>
